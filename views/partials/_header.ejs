@@ -17,7 +17,15 @@
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
-      <form class="form-inline" action="/login" method="POST">
+      <% if (user){ %>
+      <div style="display: flex; width: 40%; justify-content: space-between">
+        <h3>Logged in as:<%= user %>!</h3>
+        <form class="form-inline" action="/logout" method="POST">
+          <button type="submit" class="btn btn-outline-dark">Logout</button>
+        </form>
+      </div>
+      <% } else { %>
+        <form class="form-inline" action="/login" method="POST">
         <div class="form-group mb-2">
           <input
             class="form-control"
@@ -29,6 +37,8 @@
           <button type ="submit" ><div class="btn btn-outline-dark">Login</button>
         </div>
       </form>
+      <% } %>
+    
     </div>
   </nav>
 </header>

@@ -1,10 +1,12 @@
 const express = require("express");
+var cookieParser = require("cookie-parser");
 const app = express();
 const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
 
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 const urlDatabase = {
   b2xVn2: "http://www.lighthouselabs.ca",
@@ -16,12 +18,13 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { user: req.cookies["user"], urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = { user: req.cookies["user"] };
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -75,8 +78,13 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  res.cookie.username = req.body.username;
-  console.log(res.cookie.username);
+  res.cookie.user = req.body.username;
+  res.redirect("/urls");
+});
+
+app.post("/logout", (req, res) => {
+  //Clearing cookies
+  res.clearCookie("user");
   res.redirect("/urls");
 });
 
