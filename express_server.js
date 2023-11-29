@@ -25,7 +25,10 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[id] };
+  const templateVars = {
+    id: req.params.id,
+    longURL: urlDatabase[req.params.id],
+  };
   console.log(templateVars);
   res.render("urls_show", templateVars);
 });
@@ -69,6 +72,12 @@ app.post("/urls/:id", (req, res) => {
   } else {
     res.send("<h2>This short url does not exist.</h2>");
   }
+});
+
+app.post("/login", (req, res) => {
+  res.cookie.username = req.body.username;
+  console.log(res.cookie.username);
+  res.redirect("/urls");
 });
 
 const generateRandomString = function () {
