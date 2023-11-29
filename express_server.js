@@ -26,6 +26,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[id] };
+  console.log(templateVars);
   res.render("urls_show", templateVars);
 });
 
@@ -50,6 +51,20 @@ app.post("/urls/:id/delete", (req, res) => {
   if (urlDatabase[req.params.id]) {
     const id = req.params.id;
     delete urlDatabase[id];
+    res.redirect("/urls");
+  } else {
+    res.send("<h2>This short url does not exist.</h2>");
+  }
+});
+
+app.post("/urls/:id", (req, res) => {
+  if (urlDatabase[req.params.id]) {
+    const id = req.params.id;
+    let newURL = "";
+    req.body.newURL.slice(0, 7) === "http://"
+      ? (newURL = req.body.newURL)
+      : (newURL = "http://" + req.body.newURL);
+    urlDatabase[id] = { longURL: newURL };
     res.redirect("/urls");
   } else {
     res.send("<h2>This short url does not exist.</h2>");
