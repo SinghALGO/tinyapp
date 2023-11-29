@@ -46,6 +46,16 @@ app.get("/u/:id", (req, res) => {
   }
 });
 
+app.post("/urls/:id/delete", (req, res) => {
+  if (urlDatabase[req.params.id]) {
+    const id = req.params.id;
+    delete urlDatabase[id];
+    res.redirect("/urls");
+  } else {
+    res.send("<h2>This short url does not exist.</h2>");
+  }
+});
+
 const generateRandomString = function () {
   return Array.from(Array(6), () =>
     Math.floor(Math.random() * 36).toString(36)
