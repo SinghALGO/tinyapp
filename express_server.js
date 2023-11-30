@@ -30,8 +30,6 @@ const urlDatabase = {};
 
 const users = {};
 
-let visits = {};
-
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -64,8 +62,8 @@ app.get("/urls/:id", (req, res) => {
       //Checking if the id(short URL) belongs to the user and was created by him
       if (urlDatabase[req.params.id].userID === req.session.user_id) {
         let totalvisits;
-        visits[req.params.id]
-          ? (totalvisits = visits[req.params.id])
+        urlDatabase[req.params.id].visits
+          ? (totalvisits = urlDatabase[req.params.id].visits)
           : (totalvisits = 0);
         const longURL = urlDatabase[req.params.id].longURL;
         const templateVars = {
@@ -100,11 +98,12 @@ app.get("/u/:id", (req, res) => {
   //Checking if it is a valid id(short URL)
   if (urlDatabase[req.params.id]) {
     const longURL = urlDatabase[req.params.id].longURL;
-    if (visits[req.params.id]) {
-      visits[req.params.id] = visits[req.params.id] + 1;
+    if (urlDatabase[req.params.id].visits) {
+      urlDatabase[req.params.id].visits = urlDatabase[req.params.id].visits + 1;
     } else {
-      visits[req.params.id] = 1;
+      urlDatabase[req.params.id].visits = 1;
     }
+    req.session.visitorId = generateRandomString();
     res.redirect(longURL);
   } else {
     res.send("<h2>This short url does not exist.</h2>");
