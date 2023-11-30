@@ -36,8 +36,13 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { user: users[req.cookies.user_id] };
-  res.render("urls_new", templateVars);
+  //Checking if user is logged-in
+  if (req.cookie.user_id) {
+    const templateVars = { user: users[req.cookie.user_id] };
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -51,9 +56,18 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const id = generateRandomString();
-  urlDatabase[id] = req.body.longURL;
-  res.redirect(`/urls/${id}`);
+  //Checking if user is logged-in
+  if (req.cookie.user_id) {
+    const id = generateRandomString();
+    let longURL = "";
+    req.body.longURL.slice(0, 7) === "http://"
+      ? (longURL = req.body.longURL)
+      : (longURL = "http://" + req.body.longURL);
+    urlDatabase[id] = { longURL };
+    res.redirect(`/urls/${id}`);
+  } else {
+    res.send("<h2>Plese login to use this feature.</h2>");
+  }
 });
 
 app.get("/u/:id", (req, res) => {
@@ -91,9 +105,15 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const templateVars = { user: req.cookies["user_id"] };
-  res.render("user_registration", templateVars);
+  //Checking if user is logged-in
+  if (req.cookie.user_id) {
+    res.redirect("/urls");
+  } else {
+    const templateVars = { user: users[req.cookie.user_id] };
+    res.render("user_register", templateVars);
+  }
 });
+
 app.post("/login", (req, res) => {
   res.cookie.user = req.body.username;
   res.redirect("/urls");
@@ -119,6 +139,7 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
+  //Checking if the user is already logged in
   if (req.cookie.user_id) {
     res.redirect("/urls");
   } else {
