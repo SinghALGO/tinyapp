@@ -42,6 +42,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   const templateVars = {
+    user: users[req.cookies.user_id],
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
   };
@@ -50,7 +51,6 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
   const id = generateRandomString();
   urlDatabase[id] = req.body.longURL;
   res.redirect(`/urls/${id}`);
@@ -101,8 +101,8 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   //Clearing cookies
-  res.clearCookie("user");
-  res.redirect("/urls");
+  res.clearCookie("user_id");
+  res.redirect("/login");
 });
 
 app.post("/register", (req, res) => {
@@ -124,6 +124,22 @@ app.get("/login", (req, res) => {
   } else {
     const templateVars = { user: users[req.cookie.user_id] };
     res.render("urls_login", templateVars);
+  }
+});
+
+app.post("/login", (req, res) => {
+  //Calling findUserbyEmail function and using it's return value in "if" statement. If user is registered then only let him login
+  const userFinder = findUserbyEmail(req.body.email, users);
+  if (!userFinder) {
+    res.sendStatus(403);
+  } else {
+    //Comparing passwords entering in login form and password entered while registering
+    if (req.body.password === userFinder.password) {
+      req.cookie.user_id = userFinder.id;
+      res.redirect("urls");
+    } else {
+      res.sendStatus(403);
+    }
   }
 });
 
