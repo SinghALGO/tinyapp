@@ -106,17 +106,31 @@ app.post("/logout", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  const userId = generateRandomString();
-  const { email, password } = req.body;
-  users[userId] = { email, password };
-  res.cookie.user_id = userId;
-  res.redirect("/urls");
+  if (req.body.email === "" || req.body.password === "") {
+    res.sendStatus(400);
+  } else if (findUserByEmail(req.body.email, users)) {
+    res.sendStatus(400);
+  } else {
+    const id = generateRandomString();
+    users[id] = { id: id, email: req.body.email, password: req.body.password };
+    res.cookie.user_id = id;
+    res.redirect("/urls");
+  }
 });
 
 const generateRandomString = function () {
   return Array.from(Array(6), () =>
     Math.floor(Math.random() * 36).toString(36)
   ).join("");
+};
+
+const findUserByEmail = function (email, users) {
+  for (const key in users) {
+    if (users[key].email === email) {
+      return users[key];
+    }
+  }
+  return null;
 };
 
 app.listen(PORT, () => {
