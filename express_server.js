@@ -5,6 +5,12 @@ const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
 
+const {
+  findUserByEmail,
+  generateRandomString,
+  urlsForUser,
+} = require("./helper");
+
 app.set("view engine", "ejs");
 
 app.use(express.urlencoded({ extended: true }));
@@ -222,31 +228,6 @@ app.post("/login", (req, res) => {
     }
   }
 });
-
-const generateRandomString = function () {
-  return Array.from(Array(6), () =>
-    Math.floor(Math.random() * 36).toString(36)
-  ).join("");
-};
-
-const findUserByEmail = function (email, database) {
-  for (const key in database) {
-    if (database[key].email === email) {
-      return database[key];
-    }
-  }
-  return null;
-};
-
-const urlsForUser = function (id, database) {
-  const updatedUrlDatabase = {};
-  for (let i in database) {
-    if (database[i].userID === id) {
-      updatedUrlDatabase[i] = database[i];
-    }
-  }
-  return updatedUrlDatabase;
-};
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
