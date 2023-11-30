@@ -1,6 +1,7 @@
 const express = require("express");
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcryptjs");
+const methodOverride = require("method-override");
 
 const app = express();
 const PORT = 8080; // default port 8080
@@ -23,6 +24,7 @@ app.use(
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
   })
 );
+app.use(methodOverride("_method"));
 
 const urlDatabase = {
   b6UTxQ: {
@@ -121,7 +123,7 @@ app.get("/u/:id", (req, res) => {
   }
 });
 
-app.post("/urls/:id/delete", (req, res) => {
+app.delete("/urls/:id/delete", (req, res) => {
   //Checking if user is logged in
   if (req.session.user_id) {
     //Checking if the id(short URL exists in urlDatabase)
@@ -144,7 +146,7 @@ app.post("/urls/:id/delete", (req, res) => {
   }
 });
 
-app.post("/urls/:id", (req, res) => {
+app.put("/urls/:id", (req, res) => {
   //Checking if user is logged in
   if (req.session.user_id) {
     //Checking if the id(short URL) was created and exists in urlDatabase
