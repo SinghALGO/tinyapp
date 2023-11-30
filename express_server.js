@@ -98,9 +98,11 @@ app.get("/u/:id", (req, res) => {
   //Checking if it is a valid id(short URL)
   if (urlDatabase[req.params.id]) {
     const longURL = urlDatabase[req.params.id].longURL;
+    //Checking if the shortUrl has already been visited, if it is the value is incremented by 1
     if (urlDatabase[req.params.id].visits) {
       urlDatabase[req.params.id].visits = urlDatabase[req.params.id].visits + 1;
     } else {
+      //Update shortUrl key to have a visits key in it and set it's value to 1
       urlDatabase[req.params.id].visits = 1;
     }
     req.session.visitorId = generateRandomString();
