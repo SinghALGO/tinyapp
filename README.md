@@ -6,15 +6,15 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ### Enter URL that is to be shortened
 
-!["Enter URL that is to be shortened"]())
+!["Enter URL that is to be shortened"](https://raw.githubusercontent.com/SinghALGO/tinyapp/master/docs/Screenshot%202023-11-29%20221450.png)
 
 ### List of URLs that a user has shortened
 
-!["List of URLs that a user has shortened"]()
+!["List of URLs that a user has shortened"](https://raw.githubusercontent.com/SinghALGO/tinyapp/master/docs/Screenshot%202023-11-29%20221625.png)
 
 ### Short URL and option to edit the URL
 
-!["Short URL and option to edit the URL"]()
+!["Short URL and option to edit the URL"](https://raw.githubusercontent.com/SinghALGO/tinyapp/master/docs/Screenshot%202023-11-29%20221740.png)
 
 ## Dependencies
 
