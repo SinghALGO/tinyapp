@@ -26,35 +26,16 @@ app.use(
 );
 app.use(methodOverride("_method"));
 
-const urlDatabase = {
-  b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: "aJ48lW",
-  },
-  i3BoGr: {
-    longURL: "https://www.google.ca",
-    userID: "aJ48lW",
-  },
-};
+const urlDatabase = {};
 
-const users = {
-  userRandomID: {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur",
-  },
-  user2RandomID: {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk",
-  },
-};
+const users = {};
 
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
 app.get("/urls", (req, res) => {
+  //Calling function urlsForUser to get refined urlDatabse containing only the shortURLs that were created by the user
   const refinedUrlsDatabase = urlsForUser(req.session.user_id, urlDatabase);
   const templateVars = {
     user: users[req.session.user_id],
@@ -191,9 +172,12 @@ app.post("/logout", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+  //Checking if entered email or password is not empty
   if (req.body.email === "" || req.body.password === "") {
     res.sendStatus(400);
-  } else if (findUserByEmail(req.body.email, users)) {
+  }
+  //Checking if user with same email has already registered by calling findUserbyEmail function
+  else if (findUserByEmail(req.body.email, users)) {
     res.sendStatus(400);
   } else {
     const id = generateRandomString();
