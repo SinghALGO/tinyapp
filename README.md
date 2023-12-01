@@ -16,6 +16,10 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 !["Short URL and option to edit the URL"](https://raw.githubusercontent.com/SinghALGO/tinyapp/master/docs/Screenshot%202023-11-29%20221740.png)
 
+### Analytics showing total visits, number of unique user visits and visitor id and corresponding timestamp
+
+!["Analytics"](https://raw.githubusercontent.com/SinghALGO/tinyapp/master/docs/Screenshot%202023-11-29%20221740.png)
+
 ## Dependencies
 
 - Node.js
