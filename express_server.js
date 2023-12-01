@@ -31,7 +31,7 @@ app.use(methodOverride("_method"));
 
 /**
  * The structure of URLDatabase is as below:
- * 
+ *
  * const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
@@ -92,8 +92,8 @@ app.get("/urls/:id", (req, res) => {
         //Getting the value of unique visitors in the visitors key that has an array as it value.
         urlDatabase[req.params.id].visitors
           ? (uniqueVisitorsCount = getUniqueVisitorsCount(
-              urlDatabase[req.params.id].visitors
-            ))
+            urlDatabase[req.params.id].visitors
+          ))
           : (uniqueVisitorsCount = 0);
         let allVisitors = urlDatabase[req.params.id].visitors;
         let visitorArray;
@@ -138,8 +138,8 @@ app.get("/u/:id", (req, res) => {
     req.session.user_id
       ? null
       : req.session.visitorId
-      ? null
-      : (req.session.visitorId = generateRandomString());
+        ? null
+        : (req.session.visitorId = generateRandomString());
     //If the shortUrl has already been clicked and has a visitors key
     if (urlDatabase[req.params.id].visitors) {
       let obj = {};
