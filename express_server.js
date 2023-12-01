@@ -52,7 +52,12 @@ const urlDatabase = {};
 const users = {};
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  //Checking if the user is already logged in
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/urls/new", (req, res) => {
@@ -92,8 +97,8 @@ app.get("/urls/:id", (req, res) => {
         //Getting the value of unique visitors in the visitors key that has an array as it value.
         urlDatabase[req.params.id].visitors
           ? (uniqueVisitorsCount = getUniqueVisitorsCount(
-            urlDatabase[req.params.id].visitors
-          ))
+              urlDatabase[req.params.id].visitors
+            ))
           : (uniqueVisitorsCount = 0);
         let allVisitors = urlDatabase[req.params.id].visitors;
         let visitorArray;
@@ -122,13 +127,18 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  //Calling function urlsForUser to get refined urlDatabse containing only the shortURLs that were created by the user
-  const refinedUrlsDatabase = urlsForUser(req.session.user_id, urlDatabase);
-  const templateVars = {
-    user: users[req.session.user_id],
-    urls: refinedUrlsDatabase,
-  };
-  res.render("urls_index", templateVars);
+  //Checking if user is logged-in
+  if (req.session.user_id) {
+    //Calling function urlsForUser to get refined urlDatabse containing only the shortURLs that were created by the user
+    const refinedUrlsDatabase = urlsForUser(req.session.user_id, urlDatabase);
+    const templateVars = {
+      user: users[req.session.user_id],
+      urls: refinedUrlsDatabase,
+    };
+    res.render("urls_index", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/u/:id", (req, res) => {
@@ -138,8 +148,8 @@ app.get("/u/:id", (req, res) => {
     req.session.user_id
       ? null
       : req.session.visitorId
-        ? null
-        : (req.session.visitorId = generateRandomString());
+      ? null
+      : (req.session.visitorId = generateRandomString());
     //If the shortUrl has already been clicked and has a visitors key
     if (urlDatabase[req.params.id].visitors) {
       let obj = {};
@@ -193,9 +203,10 @@ app.post("/urls", (req, res) => {
   if (req.session.user_id) {
     const id = generateRandomString();
     let longURL = "";
-    req.body.longURL.slice(0, 7) === "http://"
+    req.body.longURL.slice(0, 7) === "http://" ||
+    req.body.longURL.slice(0, 8) === "https://"
       ? (longURL = req.body.longURL)
-      : (longURL = "http://" + req.body.longURL);
+      : (longURL = "https://" + req.body.longURL);
     urlDatabase[id] = { longURL, userID: req.session.user_id };
     res.redirect(`/urls/${id}`);
   } else {
@@ -205,12 +216,16 @@ app.post("/urls", (req, res) => {
 
 app.post("/register", (req, res) => {
   //Checking if entered email or password is not empty
-  if (req.body.email === "" || req.body.password === "") {
-    res.sendStatus(400);
+  if (!req.body.email || !req.body.password) {
+    res.status(400).send({
+      message: "Enter valid email/password.",
+    });
   }
   //Checking if user with same email has already registered by calling findUserbyEmail function
   else if (findUserByEmail(req.body.email, users)) {
-    res.sendStatus(400);
+    res.status(400).send({
+      message: "This email is already registered.",
+    });
   } else {
     const id = generateRandomString();
     const password = req.body.password;
@@ -225,21 +240,25 @@ app.post("/login", (req, res) => {
   //Calling findUserbyEmail function and using it's return value in "if" statement. If user is registered then only let him login
   const userFinder = findUserByEmail(req.body.email, users);
   if (!userFinder) {
-    res.sendStatus(403);
+    res.status(403).send({
+      message: "Please register first.",
+    });
   } else {
     //Comparing passwords entering in login form and password entered while registering
     if (bcrypt.compareSync(req.body.password, userFinder.password)) {
       req.session.user_id = userFinder.id;
       res.redirect("urls");
     } else {
-      res.sendStatus(403);
+      res.status(403).send({
+        message: "User credentials do not match.",
+      });
     }
   }
 });
 
 app.post("/logout", (req, res) => {
   //Clearing cookies
-  req.session.user_id = null;
+  req.session = null;
   res.redirect("/login");
 });
 
