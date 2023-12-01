@@ -18,7 +18,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ### Analytics showing total visits, number of unique user visits and visitor id and corresponding timestamp
 
-!["Analytics"](https://raw.githubusercontent.com/SinghALGO/tinyapp/master/docs/Screenshot%202023-11-29%20221740.png)
+!["Analytics"](https://raw.githubusercontent.com/SinghALGO/tinyapp/master/docs/Screenshot%202023-11-30%20212900.png)
 
 ## Dependencies
 
