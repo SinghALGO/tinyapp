@@ -21,6 +21,28 @@
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
         <p>This ShortUrl has been visited <%= visits %> times</p>
+        <p>
+          This ShortUrl has been visited <%= uniqueVisitorsCount %> times by
+          unique visitors
+        </p>
+        <% if(allVisitors !== 0){ %>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Visitor ID</th>
+              <th scope="col">Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let i of allVisitors) { %>
+            <tr>
+              <td><%= Object.keys(i)[0] %></td>
+              <td><%= i[Object.keys(i)[0]] %></td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+        <% } %>
       </div>
       <div class="card-footer text-muted"></div>
     </div>

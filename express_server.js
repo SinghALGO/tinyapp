@@ -10,6 +10,8 @@ const {
   findUserByEmail,
   generateRandomString,
   urlsForUser,
+  getTime,
+  getUniqueVisitorsCount,
 } = require("./helper");
 
 app.set("view engine", "ejs");
@@ -24,8 +26,27 @@ app.use(
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
   })
 );
+
 app.use(methodOverride("_method"));
 
+/**
+ * The structure of URLDatabase is as below:
+ * 
+ * const urlDatabase = {
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+    visits: 1,
+    visitors:[{visitorId:timestamp},{visitorId1:timestamp}]
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+    visits: 2,
+    visitors: [{visitorId:timestamp},{visitorId1:timestamp}]
+  },
+};
+ */
 const urlDatabase = {};
 
 const users = {};
@@ -62,15 +83,31 @@ app.get("/urls/:id", (req, res) => {
       //Checking if the id(short URL) belongs to the user and was created by him
       if (urlDatabase[req.params.id].userID === req.session.user_id) {
         let totalvisits;
+        //Getting the value of how many times a shortUrl is visited
         urlDatabase[req.params.id].visits
           ? (totalvisits = urlDatabase[req.params.id].visits)
           : (totalvisits = 0);
         const longURL = urlDatabase[req.params.id].longURL;
+        let uniqueVisitorsCount;
+        //Getting the value of unique visitors in the visitors key that has an array as it value.
+        urlDatabase[req.params.id].visitors
+          ? (uniqueVisitorsCount = getUniqueVisitorsCount(
+              urlDatabase[req.params.id].visitors
+            ))
+          : (uniqueVisitorsCount = 0);
+        let allVisitors = urlDatabase[req.params.id].visitors;
+        let visitorArray;
+        allVisitors
+          ? (visitorArray = urlDatabase[req.params.id].visitors)
+          : (visitorArray = 0);
+
         const templateVars = {
           user: users[req.session.user_id],
           id: req.params.id,
           longURL,
           visits: totalvisits,
+          uniqueVisitorsCount,
+          allVisitors: visitorArray,
         };
         res.render("urls_show", templateVars);
       } else {
@@ -98,6 +135,34 @@ app.get("/u/:id", (req, res) => {
   //Checking if it is a valid id(short URL)
   if (urlDatabase[req.params.id]) {
     const longURL = urlDatabase[req.params.id].longURL;
+    req.session.user_id
+      ? null
+      : req.session.visitorId
+      ? null
+      : (req.session.visitorId = generateRandomString());
+    //If the shortUrl has already been clicked and has a visitors key
+    if (urlDatabase[req.params.id].visitors) {
+      let obj = {};
+      if (req.session.user_id) {
+        obj[req.session.user_id] = getTime();
+        urlDatabase[req.params.id].visitors.push(obj);
+      } else {
+        obj[req.session.visitorId] = getTime();
+        urlDatabase[req.params.id].visitors.push(obj);
+      }
+    } else {
+      //If the urlDatabase does not have visitors key , the visitor key would be defined to be an array of objects
+      urlDatabase[req.params.id].visitors = [];
+      let obj = {};
+      if (req.session.user_id) {
+        obj[req.session.user_id] = getTime();
+        urlDatabase[req.params.id].visitors.push(obj);
+      } else {
+        obj[req.session.visitorId] = getTime();
+        urlDatabase[req.params.id].visitors.push(obj);
+      }
+    }
+
     //Checking if the shortUrl has already been visited, if it is the value is incremented by 1
     if (urlDatabase[req.params.id].visits) {
       urlDatabase[req.params.id].visits = urlDatabase[req.params.id].visits + 1;
@@ -105,7 +170,8 @@ app.get("/u/:id", (req, res) => {
       //Update shortUrl key to have a visits key in it and set it's value to 1
       urlDatabase[req.params.id].visits = 1;
     }
-    req.session.visitorId = generateRandomString();
+    // req.session.visitorId = generateRandomString();
+
     res.redirect(longURL);
   } else {
     res.send("<h2>This short url does not exist.</h2>");
@@ -173,7 +239,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   //Clearing cookies
-  req.session = null;
+  req.session.user_id = null;
   res.redirect("/login");
 });
 
