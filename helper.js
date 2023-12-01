@@ -2,7 +2,7 @@
  * Function to generate random six digit alphanumeric string
  * @returns six digit random alphanumeric string
  */
-const generateRandomString = function () {
+const generateRandomString = function() {
   return Array.from(Array(6), () =>
     Math.floor(Math.random() * 36).toString(36)
   ).join("");
@@ -13,7 +13,7 @@ const generateRandomString = function () {
  * @param {*} email
  * @returns null if user not found, if user found then returns the specific user object.
  */
-const findUserByEmail = function (email, database) {
+const findUserByEmail = function(email, database) {
   for (const key in database) {
     if (database[key].email === email) {
       return database[key];
@@ -27,7 +27,7 @@ const findUserByEmail = function (email, database) {
  * @param {*} id
  * @return URLs where the userID is equal to the id of the current logged-in user.
  */
-const urlsForUser = function (id, database) {
+const urlsForUser = function(id, database) {
   const updatedUrlDatabase = {};
   for (let i in database) {
     if (database[i].userID === id) {
@@ -42,7 +42,7 @@ const urlsForUser = function (id, database) {
  * @param {}
  * @return date
  */
-const getTime = function () {
+const getTime = function() {
   const date = new Date();
 
   return (
@@ -60,7 +60,7 @@ const getTime = function () {
  * @param {an array of objects}
  * @return length of the array with no duplicates in it
  */
-const getUniqueVisitorsCount = function (visitorsArray) {
+const getUniqueVisitorsCount = function(visitorsArray) {
   let eleArr = [];
   visitorsArray.map((ele) => {
     if (eleArr.indexOf(Object.keys(ele)[0]) === -1) {
