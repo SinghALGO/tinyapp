@@ -271,9 +271,10 @@ app.put("/urls/:id", (req, res) => {
       if (urlDatabase[req.params.id].userID === req.session.user_id) {
         const id = req.params.id;
         let newURL = "";
-        req.body.newURL.slice(0, 7) === "http://"
-          ? (newURL = req.body.newURL)
-          : (newURL = "http://" + req.body.newURL);
+        req.body.longURL.slice(0, 7) === "http://" ||
+        req.body.longURL.slice(0, 8) === "https://"
+          ? (longURL = req.body.longURL)
+          : (longURL = "https://" + req.body.longURL);
         urlDatabase[id] = { longURL: newURL, userID: req.session.user_id };
         res.redirect("/urls");
       } else {
